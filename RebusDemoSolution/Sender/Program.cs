@@ -19,8 +19,8 @@ namespace Sender
                 var bus = Configure.With(activator)
                     //.Logging(l => l.ColoredConsole(LogLevel.Info))
                     //.Options(o => o.LogPipeline(verbose: true))
-                    .Transport(t => t.UseMsmq("Sender"))
-                    .Routing(r => r.TypeBased().Map<string>("Receiver"))
+                    .Transport(t => t.UseRabbitMq("Sender", "QueueDemo"))
+                    //.Routing(r => r.TypeBased().Map<string>("Receiver"))
                     .Start();
 
 

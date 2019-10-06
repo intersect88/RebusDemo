@@ -22,9 +22,10 @@ namespace Receiver
                 Configure.With(activator)
                     //.Logging(l => l.ColoredConsole(minLevel: LogLevel.Warn))
                     //.Options(o => o.LogPipeline(verbose: true))
-                    .Transport(t => t.UseMsmq("Receiver"))
+                    .Transport(t => t.UseRabbitMq("Receiver", "QueueDemo"))
                     .Start();
 
+                activator.Bus.Subscribe<string>().Wait();
                 Console.WriteLine("Press [enter] to exit.");
                 Console.ReadLine();
             }
