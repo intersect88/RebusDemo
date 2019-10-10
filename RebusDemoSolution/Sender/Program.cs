@@ -1,11 +1,8 @@
+using Messages;
 using Rebus.Activation;
 using Rebus.Config;
 using Rebus.Routing.TypeBased;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sender
 {
@@ -15,17 +12,14 @@ namespace Sender
         {
             using (var activator = new BuiltinHandlerActivator())
             {
-                string message = "Demo Message";
+                var message = new DemoMessage("Demo Message");
                 var bus = Configure.With(activator)
-                    //.Logging(l => l.ColoredConsole(LogLevel.Info))
-                    //.Options(o => o.LogPipeline(verbose: true))
                     .Transport(t => t.UseMsmq("Sender"))
-                    .Routing(r => r.TypeBased().Map<string>("Receiver"))
+                    .Routing(r => r.TypeBased().Map<DemoMessage>("Receiver"))
                     .Start();
 
 
-                if (!string.IsNullOrWhiteSpace(message))
-                    bus.Send(message).Wait();
+                bus.Send(message).Wait();
                 Console.ReadLine();
 
             }

@@ -1,10 +1,7 @@
+using Messages;
 using Rebus.Activation;
 using Rebus.Config;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Receiver
 {
@@ -14,17 +11,14 @@ namespace Receiver
         {
             using (var activator = new BuiltinHandlerActivator())
             {
-                activator.Handle<string>(async str =>
+                activator.Handle<DemoMessage>(async msg =>
                 {
-                    Console.WriteLine($"Received: {str}");
+                    Console.WriteLine($"Received: {msg.Text}");
                 });
 
                 Configure.With(activator)
-                    //.Logging(l => l.ColoredConsole(minLevel: LogLevel.Warn))
-                    //.Options(o => o.LogPipeline(verbose: true))
                     .Transport(t => t.UseMsmq("Receiver"))
                     .Start();
-
                 Console.WriteLine("Press [enter] to exit.");
                 Console.ReadLine();
             }
