@@ -1,3 +1,4 @@
+using Messages;
 using Rebus.Activation;
 using Rebus.Config;
 using System;
@@ -14,18 +15,17 @@ namespace Receiver
         {
             using (var activator = new BuiltinHandlerActivator())
             {
-                activator.Handle<string>(async str =>
+                activator.Handle<DemoMessage>(async msg =>
                 {
-                    Console.WriteLine($"Received: {str}");
+                    Console.WriteLine($"Received: {msg.Text}");
                 });
 
                 Configure.With(activator)
-                    //.Logging(l => l.ColoredConsole(minLevel: LogLevel.Warn))
-                    //.Options(o => o.LogPipeline(verbose: true))
-                    .Transport(t => t.UseRabbitMq("Receiver", "QueueDemo"))
+                    .Transport(t => t.UseRabbitMq("amqp://localhost", "Receiver"))
                     .Start();
 
-                activator.Bus.Subscribe<string>().Wait();
+                activator.Bus.Subscribe<DemoMessage>().Wait();
+
                 Console.WriteLine("Press [enter] to exit.");
                 Console.ReadLine();
             }

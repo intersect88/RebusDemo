@@ -1,3 +1,4 @@
+using Messages;
 using Rebus.Activation;
 using Rebus.Config;
 using Rebus.Routing.TypeBased;
@@ -15,17 +16,13 @@ namespace Sender
         {
             using (var activator = new BuiltinHandlerActivator())
             {
-                string message = "Demo Message";
+                var message = new DemoMessage("Demo Message");
                 var bus = Configure.With(activator)
-                    //.Logging(l => l.ColoredConsole(LogLevel.Info))
-                    //.Options(o => o.LogPipeline(verbose: true))
-                    .Transport(t => t.UseRabbitMq("Sender", "QueueDemo"))
-                    //.Routing(r => r.TypeBased().Map<string>("Receiver"))
+                    .Transport(t => t.UseRabbitMqAsOneWayClient("amqp://localhost"))
+                    .Routing(r => r.TypeBased().Map<DemoMessage>("Receiver"))
                     .Start();
 
-
-                if (!string.IsNullOrWhiteSpace(message))
-                    bus.Send(message).Wait();
+                    bus.Publish(message).Wait();
                 Console.ReadLine();
 
             }
