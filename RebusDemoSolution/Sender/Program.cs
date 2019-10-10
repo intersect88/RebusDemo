@@ -3,6 +3,7 @@ using Rebus.Config;
 using Rebus.Routing.TypeBased;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,22 +14,35 @@ namespace Sender
     {
         static void Main(string[] args)
         {
+            var azureServiceBusConnection = ConfigurationManager.ConnectionStrings["ASBConnection"].ConnectionString;
             using (var activator = new BuiltinHandlerActivator())
             {
                 string message = "Demo Message";
-                var bus = Configure.With(activator)
+                Configure.With(activator)
                     //.Logging(l => l.ColoredConsole(LogLevel.Info))
                     //.Options(o => o.LogPipeline(verbose: true))
-                    .Transport(t => t.UseMsmq("Sender"))
-                    .Routing(r => r.TypeBased().Map<string>("Receiver"))
+                    .Transport(t => t.UseAzureServiceBus(azureServiceBusConnection, "publisher"))
                     .Start();
 
-
+                var bus = activator.Bus.Advanced.SyncBus;
+                //bus.
                 if (!string.IsNullOrWhiteSpace(message))
-                    bus.Send(message).Wait();
+                {
+                    bus.Publish(new PublishMessage(message));
+                }
                 Console.ReadLine();
 
             }
+        }
+    }
+
+    internal class PublishMessage
+    {
+        private string message;
+
+        public PublishMessage(string message)
+        {
+            this.message = message;
         }
     }
 }
