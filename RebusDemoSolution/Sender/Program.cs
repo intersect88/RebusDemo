@@ -17,8 +17,7 @@ namespace Sender
                     .Transport(t => t.UseMsmq("Sender"))
                     .Routing(r => r.TypeBased().Map<DemoMessage>("Receiver"))
                     .Start();
-
-
+                
                 bus.Send(message).Wait();
                 Console.ReadLine();
 
