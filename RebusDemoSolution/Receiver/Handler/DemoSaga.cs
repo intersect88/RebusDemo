@@ -8,10 +8,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Receiver.Handler
+namespace OrderHandler.Handler
 {
     class DemoSaga : Saga<DemoSagaData>,
-        IAmInitiatedBy<Order>
+        IAmInitiatedBy<Order>, IAmInitiatedBy<OrderPayment>
     {
         readonly IBus _bus;
 
@@ -22,22 +22,45 @@ namespace Receiver.Handler
 
         protected override void CorrelateMessages(ICorrelationConfig<DemoSagaData> config)
         {
-            config.Correlate<Order>(m => m.Type, d => d.OrderType);
+            config.Correlate<Order>(m => m.Id, d => d.OrderId);
+            config.Correlate<OrderPayment>(m => m.Id, d => d.OrderId);
         }
 
         public async Task Handle(Order message)
         {
             if (!IsNew) return;
 
-
-            // store the CRM customer ID in the saga
             Data.OrderType = message.Type;
+            Data.OrderReceived = true;
 
-            // command that legal information be acquired for the customer
-            //await _bus.Publish(new OrderQuantity(message.quantity));
-            Console.WriteLine("Order Received -> Type: "+message.Type);
-            MarkAsComplete();
+            Console.WriteLine(@"
+Order Received -> Type: " + message.Type);
 
+            await CompleteSaga();
+        }
+
+        public async Task Handle(OrderPayment message)
+        {
+            if (IsNew) return;
+
+            Data.PaymentReceived = message.Payment;
+            
+            Console.WriteLine(@"
+Payment Received!
+");
+            await CompleteSaga();
+
+        }
+
+        async Task CompleteSaga()
+        {
+            if (Data.Complete())
+            {
+                Console.WriteLine(@"
+Order Complete
+");
+                MarkAsComplete();
+            }
         }
 
     }

@@ -2,11 +2,13 @@
 {
     public class OrderPayment
     {
-        public bool payment;
+        public int Id;
+        public bool Payment;
 
-        public OrderPayment(bool payment)
+        public OrderPayment(int id, bool payment)
         {
-            this.payment = payment;
+            Id = id;
+            Payment = payment;
         }
     }
 }

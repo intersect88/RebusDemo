@@ -2,11 +2,13 @@
 {
     public class Order
     {
+        public int Id;
         public string Type;
 
-        public Order(string type)
+        public Order(int id, string type)
         {
-            this.Type = type;
+            Id = id;
+            Type = type;
         }
     }
 }

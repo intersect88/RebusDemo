@@ -2,11 +2,13 @@
 {
     public class OrderConfirmation
     {
-        public bool confirmation;
+        public int Id;
+        public bool Confirmation;
 
-        public OrderConfirmation(bool confirmation)
+        public OrderConfirmation(int id, bool confirmation)
         {
-            this.confirmation = confirmation;
+            Id = id;
+            Confirmation = confirmation;
         }
     }
 }
